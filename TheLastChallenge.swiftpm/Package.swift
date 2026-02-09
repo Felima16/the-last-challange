@@ -10,7 +10,7 @@ import AppleProductTypes
 let package = Package(
     name: "TheLastChallenge",
     platforms: [
-        .iOS("16.0")
+        .iOS("18.1")
     ],
     products: [
         .iOSApplication(
@@ -20,7 +20,7 @@ let package = Package(
             teamIdentifier: "7NBD68U8QX",
             displayVersion: "1.0",
             bundleVersion: "1",
-            appIcon: .placeholder(icon: .openBook),
+            appIcon: .placeholder(icon: .lightningBolt),
             accentColor: .presetColor(.green),
             supportedDeviceFamilies: [
                 .pad,
@@ -31,7 +31,8 @@ let package = Package(
                 .landscapeRight,
                 .landscapeLeft,
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
-            ]
+            ],
+            appCategory: .education
         )
     ],
     targets: [
@@ -40,5 +41,5 @@ let package = Package(
             path: "."
         )
     ],
-    swiftLanguageVersions: [.version("6")]
+    swiftLanguageModes: [.version("6")]
 )
