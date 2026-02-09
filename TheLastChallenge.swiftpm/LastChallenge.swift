@@ -1,10 +1,11 @@
 import SwiftUI
+import SwiftData
 
 @main
-struct MyApp: App {
+struct LastChallenge: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-    }
+    }  
 }
