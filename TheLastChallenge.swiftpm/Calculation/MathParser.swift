@@ -18,13 +18,13 @@ struct MathParser {
             }
 
             // Extract values with flexible parsing
-            if cleaned.contains("a") && (cleaned.contains("=") || cleaned.contains("is")) {
+            if cleaned.hasPrefix("a=") || cleaned.hasPrefix("ais") {
                 result.coeffs.coeffA = await extractCoefficients(from: cleaned, with: "a")
             }
-            if cleaned.contains("b") && (cleaned.contains("=") || cleaned.contains("is")) && !cleaned.contains("b²") {
+            if (cleaned.hasPrefix("b=") || cleaned.hasPrefix("bis")) && !cleaned.contains("b²") {
                 result.coeffs.coeffB = await extractCoefficients(from: cleaned, with: "b")
             }
-            if cleaned.contains("c") && (cleaned.contains("=") || cleaned.contains("is")) {
+            if cleaned.hasPrefix("c=") || cleaned.hasPrefix("cis") {
                 result.coeffs.coeffC = await extractCoefficients(from: cleaned, with: "c")
             }
 
@@ -117,9 +117,9 @@ struct MathParser {
     private func extractCoefficients(from text: String, with coefficient: String) async -> Double? {
         // Try "a=2" or "a = 2" or "a is 2"
         let patterns = [
-            "\(coefficient)=([+-]?[0-9.]+)",
-            "\(coefficient)\\s*=\\s*([+-]?[0-9.]+)",
-            "\(coefficient)\\s*is\\s*([+-]?[0-9.]+)"
+            "\\b\(coefficient)=([+-]?[0-9.]+)",
+            "\\b\(coefficient)\\s*=\\s*([+-]?[0-9.]+)",
+            "\\b\(coefficient)\\s*is\\s*([+-]?[0-9.]+)"
         ]
 
         for pattern in patterns {
