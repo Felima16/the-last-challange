@@ -95,11 +95,12 @@ struct MathParser {
     private func smartCorrectMath(_ text: String) async -> String {
         var corrected = text
 
-        // Number corrections
-        corrected = corrected.replacingOccurrences(of: "o", with: "0")
-        corrected = corrected.replacingOccurrences(of: "l", with: "1")
-        corrected = corrected.replacingOccurrences(of: "i", with: "1")
-        corrected = corrected.replacingOccurrences(of: "z", with: "2")
+        // Number corrections: only replace OCR-like characters when not surrounded by
+        // other letters, to avoid corrupting keywords like "delta" or "discriminant"
+        corrected = corrected.replacingOccurrences(of: "(?<![a-z])o(?![a-z])", with: "0", options: .regularExpression)
+        corrected = corrected.replacingOccurrences(of: "(?<![a-z])l(?![a-z])", with: "1", options: .regularExpression)
+        corrected = corrected.replacingOccurrences(of: "(?<![a-z])i(?![a-z])", with: "1", options: .regularExpression)
+        corrected = corrected.replacingOccurrences(of: "(?<![a-z])z(?![a-z])", with: "2", options: .regularExpression)
 
         // Quadratic term patterns
         let patterns: [(String, String)] = [
