@@ -5,7 +5,7 @@ import SwiftData
 struct LastChallenge: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			RootView()
         }
     }  
 }
