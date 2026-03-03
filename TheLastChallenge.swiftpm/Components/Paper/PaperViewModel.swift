@@ -3,9 +3,11 @@ import PencilKit
 import Vision
 
 @Observable
-class PaperViewModel {
-    var papers: [Paper] = []
-    var isShowToolPicker = false
+@MainActor final class PaperViewModel {
+    let mathEvaluator = MathEvaluation()
+
+	var papers: [Paper] = []
+	var isShowToolPicker = false
 
     var previousPaper = 0
     var currentPaper = 0
@@ -14,6 +16,10 @@ class PaperViewModel {
     
     var shouldRecognise = false
     var textResult = ""
+
+	// Error
+	var message = ""
+	var isShowingAlert = false
 
     init() {
         for question in Question.allCases {
@@ -59,12 +65,13 @@ class PaperViewModel {
                 return
             }
             
-            guard let observations = request.results as? [VNRecognizedTextObservation] else {
+            guard let observations = request.results as? [VNRecognizedTextObservation], !observations.isEmpty else {
                 textResult = "No text found"
                 return
             }
-            
-            self.processRecognizedText(observations)
+			Task {
+				await self.processRecognizedText(observations)
+			}
         }
         
         request.recognitionLevel = .accurate
@@ -79,15 +86,28 @@ class PaperViewModel {
         }
     }
     
-    private func processRecognizedText(_ observations: [VNRecognizedTextObservation]) {
-        var recognizedStrings: [String] = []
-        
-        for observation in observations {
-            guard let topCandidate = observation.topCandidates(1).first else { continue }
-            recognizedStrings.append(topCandidate.string)
+	private func processRecognizedText(_ observations: [VNRecognizedTextObservation]) async {
+        // Sort observations by vertical position (top to bottom)
+        let sortedObs = observations.sorted { $0.boundingBox.origin.y > $1.boundingBox.origin.y }
+
+        // Extract text lines
+        var lines: [String] = []
+        for obs in sortedObs {
+            if let text = obs.topCandidates(1).first?.string {
+                lines.append(text)
+            }
         }
-        
-        textResult = recognizedStrings.joined(separator: " ")
+
         shouldRecognise = false
+		let result = await mathEvaluator.evaluateMathExpression(lines: lines)
+
+		switch result {
+		case .success(let value):
+			textResult = "Result: \(value)"
+		case .failure(let error):
+			message = "Error: \(error)"
+			isShowingAlert = true
+		}
     }
 }
+
