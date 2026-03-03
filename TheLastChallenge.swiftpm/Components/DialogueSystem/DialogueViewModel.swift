@@ -21,7 +21,8 @@ enum DialogueCase {
 		dialogues[currentDialogueCase] ?? []
 	}
 	var currentDialogue: String {
-		currentDialogues[currentIndex]
+		guard !currentDialogues.isEmpty, currentIndex < currentDialogues.count else { return "" }
+		return currentDialogues[currentIndex]
 	}
 	private var currentIndex = 0
 	private(set) var isDialogueActive = false
@@ -34,7 +35,7 @@ enum DialogueCase {
 		currentIndex > 0
 	}
 	var isEndOfDialogue: Bool {
-		currentIndex == currentDialogues.count - 1
+		currentDialogues.isEmpty || currentIndex == currentDialogues.count - 1
 	}
 
 	init () {
